@@ -1,5 +1,15 @@
+
+using ServiceLink.Data;
+using ServiceLink.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+
+
 namespace ServiceLink
 {
+   
+
     public class Program
     {
         public static void Main(string[] args)
@@ -23,14 +33,36 @@ namespace ServiceLink
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.MapDefaultControllerRoute(); 
             app.UseAuthorization();
-
+            app.UseStaticFiles();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                // Relax password rules for development convenience (adjust for production)
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
+
+            builder.Services.AddControllersWithViews();
+
         }
     }
 }
