@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServiceLink.Models
 {
@@ -12,21 +11,23 @@ namespace ServiceLink.Models
         [Required]
         public int ServiceId { get; set; }
 
-        // optional navigation property
-        public Service Service { get; set; }
+        // navigation property is optional during create
+        public Service? Service { get; set; }
 
         [Required]
-        public string CustomerId { get; set; }
+        public string CustomerId { get; set; } = string.Empty;
 
         [Required]
-        public string ProviderId { get; set; }
+        public string ProviderId { get; set; } = string.Empty;
 
         public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
+
         public DateTime? ScheduledFor { get; set; }
 
         [MaxLength(50)]
-        public string Status { get; set; } = "Pending"; // Pending, Accepted, Rejected, Completed
+        public string Status { get; set; } = "Pending";
 
-        public string Notes { get; set; }
+        // optional
+        public string? Notes { get; set; }
     }
 }

@@ -1,7 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-public class ApplicationUser : IdentityUser
+namespace ServiceLink.Models
 {
-    public string FullName { get; set; }
-    public string Role { get; set; } // "Customer", "Provider", "Admin"
+    public class ApplicationUser : IdentityUser
+    {
+        // optional full name
+        public string? FullName { get; set; }
+
+        // role usually stored via IdentityUserRole, but keep a helper property if you used it
+        public string? Role { get; set; }
+    }
 }

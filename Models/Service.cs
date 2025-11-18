@@ -8,20 +8,24 @@ namespace ServiceLink.Models
         [Key]
         public int ServiceId { get; set; }
 
-        // ProviderId will match AspNetUsers.Id (string)
+        // required: will always be set to AppUser.Id (string), so keep non-nullable
         [Required]
-        public string ProviderId { get; set; }
+        public string ProviderId { get; set; } = string.Empty;
 
         [Required, MaxLength(200)]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
-        public string Description { get; set; }
-        public string Category { get; set; }
+        // optional, allow null
+        public string? Description { get; set; }
+
+        public string? Category { get; set; }
 
         [DataType(DataType.Currency)]
         public decimal Price { get; set; }
 
-        public string ImageUrl { get; set; }
+        // optional url or empty
+        public string? ImageUrl { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
