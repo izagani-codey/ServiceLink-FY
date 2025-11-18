@@ -2,6 +2,8 @@ using ServiceLink.Data;
 using ServiceLink.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using ServiceLink.Services; // adjust namespace if different
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +16,7 @@ builder.Services.AddRazorPages();
 // your existing db / identity wiring (example)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddSingleton<IEmailSender, NoopEmailSender>();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
     // password options if any...
 })
