@@ -114,8 +114,7 @@ ServiceLink/
 ├── ServiceLink.csproj
 └── README.md
 
-yaml
-Copy code
+
 
 ---
 
@@ -128,8 +127,7 @@ Copy code
 3. Inspect created users in SQL Server Object Explorer under:
 ServiceLinkDb → Tables → dbo.AspNetUsers
 
-yaml
-Copy code
+
 
 > Booking and service management not completed yet — planned next.
 
