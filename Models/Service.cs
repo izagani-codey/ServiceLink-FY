@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServiceLink.Models
 {
@@ -8,24 +10,32 @@ namespace ServiceLink.Models
         [Key]
         public int ServiceId { get; set; }
 
-        // required: will always be set to AppUser.Id (string), so keep non-nullable
+        // FK to AspNetUsers.Id (ApplicationUser)
         [Required]
-        public string ProviderId { get; set; } = string.Empty;
+        public string ProviderId { get; set; } = null!;
 
-        [Required, MaxLength(200)]
-        public string Title { get; set; } = string.Empty;
+        [Required]
+        [StringLength(100)]
+        public string Title { get; set; } = null!;
 
-        // optional, allow null
+        [StringLength(2000)]
         public string? Description { get; set; }
 
+        [StringLength(100)]
         public string? Category { get; set; }
 
-        [DataType(DataType.Currency)]
+        [Required]
+        [Precision(18, 2)]             // ensures decimal(18,2) in SQL
+        [Range(0, 9999999.99)]
         public decimal Price { get; set; }
 
-        // optional url or empty
-        public string? ImageUrl { get; set; }
+        public DateTime CreatedAt { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsActive { get; set; } = true;
+
+        public Service()
+        {
+            CreatedAt = DateTime.UtcNow;
+        }
     }
 }
