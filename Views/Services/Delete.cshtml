@@ -1,0 +1,25 @@
+﻿@model ServiceLink.Models.Service
+@{
+    ViewData["Title"] = "Delete Service";
+}
+
+<h2>Delete Service</h2>
+
+<div class="alert alert-warning">
+    <strong>Are you sure?</strong> Deleting a service is permanent.
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Title</h5>
+        <p>@Model.Description</p>
+        <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+    </div>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.ServiceId" />
+    <button type="submit" class="btn btn-danger">Yes, delete</button>
+    <a asp-action="MyServices" class="btn btn-secondary ms-2">Cancel</a>
+</form>

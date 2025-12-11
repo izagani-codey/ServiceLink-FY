@@ -1,0 +1,57 @@
+﻿@model IEnumerable<ServiceLink.ViewModels.BookingListItemViewModel>
+@{
+    ViewData["Title"] = "Incoming Bookings";
+}
+
+<h2>Incoming Bookings</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No pending bookings.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th>Customer</th>
+                <th>Requested For</th>
+                <th>Notes</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var b in Model)
+            {
+                <tr>
+                    <td>@b.ServiceTitle</td>
+                    <td>@b.CustomerEmail</td>
+                    <td>@b.RequestedFor.ToLocalTime().ToString("g")</td>
+                    <td>@(string.IsNullOrEmpty(b.Notes) ? "-" : b.Notes)</td>
+                    <td>
+                        <form asp-action="Accept" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@b.BookingId" />
+                            <button class="btn btn-sm btn-success">Accept</button>
+                        </form>
+                        <form asp-action="Reject" method="post" class="d-inline ms-1">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@b.BookingId" />
+                            <button class="btn btn-sm btn-danger">Reject</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

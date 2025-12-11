@@ -1,8 +1,17 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServiceLink.Models
 {
+    public enum BookingStatus
+    {
+        Pending,
+        Accepted,
+        Rejected,
+        Cancelled
+    }
+
     public class Booking
     {
         [Key]
@@ -11,23 +20,25 @@ namespace ServiceLink.Models
         [Required]
         public int ServiceId { get; set; }
 
-        // navigation property is optional during create
+        [ForeignKey(nameof(ServiceId))]
         public Service? Service { get; set; }
 
         [Required]
-        public string CustomerId { get; set; } = string.Empty;
+        public string CustomerId { get; set; } = null!; // AspNetUsers.Id
 
         [Required]
-        public string ProviderId { get; set; } = string.Empty;
+        public string ProviderId { get; set; } = null!; // copied from Service.ProviderId
 
-        public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
+        [Required]
+        public DateTime RequestedFor { get; set; }
 
-        public DateTime? ScheduledFor { get; set; }
-
-        [MaxLength(50)]
-        public string Status { get; set; } = "Pending";
-
-        // optional
+        [StringLength(1000)]
         public string? Notes { get; set; }
+
+        [Required]
+        [Column(TypeName = "nvarchar(24)")]
+        public BookingStatus Status { get; set; } = BookingStatus.Pending;
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

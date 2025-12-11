@@ -44,8 +44,18 @@
                         <a class="btn btn-sm btn-outline-primary" href="#">Edit</a>
                         <a class="btn btn-sm btn-outline-danger" href="#">Delete</a>
                     </td>
+
+                    <td>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@s.ServiceId">View</a>
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@s.ServiceId">Edit</a>
+                        <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@s.ServiceId">Delete</a>
+                    </td>
+
+                
                 </tr>
             }
+
+
         }
     </tbody>
 </table>

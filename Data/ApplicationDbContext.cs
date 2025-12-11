@@ -12,8 +12,9 @@ namespace ServiceLink.Data
         // Add these two DbSets
         public DbSet<Service> Services { get; set; }
         public DbSet<Booking> Bookings { get; set; }
+         
 
-        
+
 
         // Optional: further configuration
         protected override void OnModelCreating(ModelBuilder builder)

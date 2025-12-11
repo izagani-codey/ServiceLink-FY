@@ -1,0 +1,61 @@
+﻿@model IEnumerable<ServiceLink.Models.Booking>
+@{
+    ViewData["Title"] = "My Bookings";
+}
+
+<h2>My Bookings</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Service</th>
+            <th>Requested For</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th>Requested At</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr><td colspan="6" class="text-muted">No bookings found.</td></tr>
+        }
+        else
+        {
+            foreach (var b in Model)
+            {
+                <tr>
+                    <td>@(b.Service?.Title ?? "—")</td>
+                    <td>@b.RequestedFor.ToLocalTime().ToString("g")</td>
+                    <td>@b.Status</td>
+                    <td>@(string.IsNullOrEmpty(b.Notes) ? "-" : b.Notes)</td>
+                    <td>@b.CreatedAt.ToLocalTime().ToString("g")</td>
+                    <td>
+                        @if (b.Status == ServiceLink.Models.BookingStatus.Pending)
+                        {
+                            <form asp-action="Cancel" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@b.BookingId" />
+                                <button class="btn btn-sm btn-warning">Cancel</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
