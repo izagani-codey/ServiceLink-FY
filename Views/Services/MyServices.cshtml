@@ -1,0 +1,51 @@
+﻿@model IEnumerable<ServiceLink.Models.Service>
+@{
+    ViewData["Title"] = "My Services";
+}
+
+<h2>My Services</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create New Service</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Created</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr><td colspan="5" class="text-muted">You have no services yet.</td></tr>
+        }
+        else
+        {
+            foreach (var s in Model)
+            {
+                <tr>
+                    <td>@s.Title</td>
+                    <td>@s.Price.ToString("C")</td>
+                    <td>@(String.IsNullOrEmpty(s.Category) ? "-" : s.Category)</td>
+                    <td>@s.CreatedAt.ToLocalTime().ToString("g")</td>
+                    <td>
+                        @* Edit/Delete to implement later *@
+                        <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Details", "Services", new { id = s.ServiceId })">View</a>
+                        <a class="btn btn-sm btn-outline-primary" href="#">Edit</a>
+                        <a class="btn btn-sm btn-outline-danger" href="#">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

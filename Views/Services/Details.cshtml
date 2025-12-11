@@ -1,0 +1,23 @@
+﻿@model ServiceLink.Models.Service
+@{
+    ViewData["Title"] = "Service Details";
+}
+
+<h2>@Model.Title</h2>
+
+<div class="mb-3">
+    <p>@Model.Description</p>
+    <p><strong>Category:</strong> @(String.IsNullOrEmpty(Model.Category) ? "General" : Model.Category)</p>
+    <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+    <p><strong>Created:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")</p>
+</div>
+
+@* Booking action (only visible to authenticated customers) *@
+@if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
+{
+    <a class="btn btn-success" href="@Url.Action("Create", "Bookings", new { serviceId = Model.ServiceId })">Request Booking</a>
+}
+else if (!User.Identity?.IsAuthenticated == true)
+{
+    <a class="btn btn-outline-primary" href="@Url.Action("Login", "Account", new { area = "Identity" })">Login to Request</a>
+}
