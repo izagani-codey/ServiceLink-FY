@@ -1,173 +1,37 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ServiceLink.Data;
-using ServiceLink.Models;
-using ServiceLink.ViewModels;
+﻿@model ServiceLink.ViewModels.BookingCreateViewModel
 
-namespace ServiceLink.Controllers
-{
-    public class BookingsController : Controller
-    {
-        private readonly ApplicationDbContext _db;
-        private readonly ILogger<BookingsController>
-    _logger;
 
-    public BookingsController(ApplicationDbContext db, ILogger<BookingsController>
-        logger)
-        {
-        _db = db;
-        _logger = logger;
-        }
+@{
+    ViewData["Title"] = "Request Booking";
+}
 
-        // GET: /Bookings/Create?serviceId=5
-        [Authorize(Roles = "User,Customer,Provider,Admin,MasterDemo")]
-        public async Task<IActionResult>
-            Create(int serviceId)
-            {
-            var service = await _db.Services.AsNoTracking().FirstOrDefaultAsync(s => s.ServiceId == serviceId);
-            if (service == null) return NotFound();
+<div class="container py-4">
 
-            var vm = new BookingCreateViewModel
-            {
-            ServiceId = serviceId,
-            ServiceTitle = service.Title,
-            RequestedFor = DateTime.UtcNow.Date.AddDays(1) // default tomorrow
-            };
+    <div class="mb-4 p-3 border rounded bg-light">
+        <h4 class="mb-1">Booking Service</h4>
+        <p class="mb-0 text-muted">
+            You are requesting a booking for:
+            <strong>@ViewBag.ServiceTitle</strong>
+        </p>
+    </div>
 
-            return View(vm);
-            }
+    <form asp-action="Create" method="post">
+        <input type="hidden" asp-for="ServiceId" />
 
-            // POST: /Bookings/Create
-            [HttpPost]
-            [Authorize(Roles = "User,Customer,Provider,Admin,MasterDemo")]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult>
-                Create(BookingCreateViewModel vm)
-                {
-                if (!ModelState.IsValid) return View(vm);
+        <div class="mb-3">
+            <label asp-for="RequestedFor" class="form-label"></label>
+            <input asp-for="RequestedFor" type="date" class="form-control" />
+            <span asp-validation-for="RequestedFor" class="text-danger"></span>
+        </div>
 
-                // basic validation: no past dates (compare date part)
-                if (vm.RequestedFor.Date < DateTime.UtcNow.Date)
-                {
-                ModelState.AddModelError(nameof(vm.RequestedFor), "Requested date cannot be in the past.");
-                return View(vm);
-                }
+        <button type="submit" class="btn btn-primary">
+            Submit Booking Request
+        </button>
 
-                var service = await _db.Services.FirstOrDefaultAsync(s => s.ServiceId == vm.ServiceId);
-                if (service == null) return NotFound();
-
-                var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (customerId == null) return Forbid();
-
-                var booking = new Booking
-                {
-                ServiceId = vm.ServiceId,
-                Service = null,
-                CustomerId = customerId,
-                ProviderId = service.ProviderId ?? throw new InvalidOperationException("Service has no provider."),
-                RequestedFor = vm.RequestedFor,
-                Notes = vm.Notes,
-                Status = BookingStatus.Pending,
-                CreatedAt = DateTime.UtcNow
-                };
-
-                _db.Bookings.Add(booking);
-                await _db.SaveChangesAsync();
-
-                TempData["SuccessMessage"] = "Booking requested. Provider will review your request.";
-                return RedirectToAction(nameof(MyBookings));
-                }
-
-                // GET: /Bookings/MyBookings
-                [Authorize]
-                public async Task<IActionResult>
-                    MyBookings()
-                    {
-                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    if (userId == null) return Forbid();
-
-                    var bookings = await _db.Bookings
-                    .AsNoTracking()
-                    .Where(b => b.CustomerId == userId)
-                    .Include(b => b.Service)
-                    .OrderByDescending(b => b.CreatedAt)
-                    .ToListAsync();
-
-                    return View(bookings);
-                    }
-
-                    // GET: /Bookings/Incoming
-                    [Authorize(Roles = "Provider,Admin,MasterDemo")]
-                    public async Task<IActionResult>
-                        Incoming()
-                        {
-                        var providerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                        if (providerId == null) return Forbid();
-
-                        var bookings = await _db.Bookings
-                        .AsNoTracking()
-                        .Where(b => b.ProviderId == providerId && b.Status == BookingStatus.Pending)
-                        .Include(b => b.Service)
-                        .OrderBy(b => b.RequestedFor)
-                        .ToListAsync();
-
-                        return View(bookings);
-                        }
-
-                        // POST: /Bookings/Accept/5
-                        [HttpPost]
-                        [Authorize(Roles = "Provider,Admin,MasterDemo")]
-                        [ValidateAntiForgeryToken]
-                        public async Task<IActionResult>
-                            Accept(int id)
-                            {
-                            var providerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                            if (providerId == null) return Forbid();
-
-                            var booking = await _db.Bookings.FirstOrDefaultAsync(b => b.BookingId == id);
-                            if (booking == null) return NotFound();
-
-                            if (booking.ProviderId != providerId) return Forbid();
-                            if (booking.Status != BookingStatus.Pending)
-                            {
-                            TempData["ErrorMessage"] = "Booking status has changed. Action not allowed.";
-                            return RedirectToAction(nameof(Incoming));
-                            }
-
-                            booking.Status = BookingStatus.Accepted;
-                            await _db.SaveChangesAsync();
-
-                            TempData["SuccessMessage"] = "Booking accepted.";
-                            return RedirectToAction(nameof(Incoming));
-                            }
-
-                            // POST: /Bookings/Reject/5
-                            [HttpPost]
-                            [Authorize(Roles = "Provider,Admin,MasterDemo")]
-                            [ValidateAntiForgeryToken]
-                            public async Task<IActionResult>
-                                Reject(int id)
-                                {
-                                var providerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                                if (providerId == null) return Forbid();
-
-                                var booking = await _db.Bookings.FirstOrDefaultAsync(b => b.BookingId == id);
-                                if (booking == null) return NotFound();
-
-                                if (booking.ProviderId != providerId) return Forbid();
-                                if (booking.Status != BookingStatus.Pending)
-                                {
-                                TempData["ErrorMessage"] = "Booking status has changed. Action not allowed.";
-                                return RedirectToAction(nameof(Incoming));
-                                }
-
-                                booking.Status = BookingStatus.Rejected;
-                                await _db.SaveChangesAsync();
-
-                                TempData["SuccessMessage"] = "Booking rejected.";
-                                return RedirectToAction(nameof(Incoming));
-                                }
-                                }
-                                }
+        <a asp-action="Index"
+           asp-controller="Services"
+           class="btn btn-link">
+            Cancel
+        </a>
+    </form>
+</div>

@@ -85,11 +85,10 @@ namespace ServiceLink.Controllers
             if (userId == null) return Forbid();
 
             var bookings = await _db.Bookings
-                .AsNoTracking()
-                .Where(b => b.CustomerId == userId)
-                .Include(b => b.Service)
-                .OrderByDescending(b => b.CreatedAt)
-                .ToListAsync();
+    .Include(b => b.Service)
+    .Where(b => b.CustomerId == userId)
+    .ToListAsync();
+
 
             return View(bookings);
         }

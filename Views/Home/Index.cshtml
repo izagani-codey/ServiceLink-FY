@@ -1,10 +1,36 @@
 ﻿@{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Welcome";
 }
-<div class="container mt-5">
-    <div class="jumbotron py-5 text-center bg-light rounded">
-        <h1 class="display-4">Find local services fast</h1>
-        <p class="lead">ServiceLink connects customers with reliable service providers nearby.</p>
-        <a class="btn btn-primary btn-lg" asp-controller="Services" asp-action="Index">Browse Services</a>
+
+<div class="container text-center mt-5">
+    <h1 class="display-5 fw-bold">ServiceLink</h1>
+
+    <p class="lead mt-3">
+        Find and book trusted services, or manage your service business in one place.
+    </p>
+
+    <div class="mt-4">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a class="btn btn-primary btn-lg"
+               asp-controller="Services"
+               asp-action="Index">
+                Go to Services
+            </a>
+        }
+        else
+        {
+            <a class="btn btn-primary btn-lg me-2"
+               asp-controller="Services"
+               asp-action="Index">
+                Browse Services
+            </a>
+
+            <a class="btn btn-outline-secondary btn-lg"
+               asp-area="Identity"
+               asp-page="/Account/Login">
+                Login
+            </a>
+        }
     </div>
 </div>

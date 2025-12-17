@@ -40,5 +40,8 @@ namespace ServiceLink.Models
         public BookingStatus Status { get; set; } = BookingStatus.Pending;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Add this property if it does not exist
+        public string ServiceTitle { get; set; }
     }
 }

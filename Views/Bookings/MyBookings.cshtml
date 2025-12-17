@@ -1,61 +1,41 @@
 ﻿@model IEnumerable<ServiceLink.Models.Booking>
+
 @{
     ViewData["Title"] = "My Bookings";
 }
 
-<h2>My Bookings</h2>
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">My Bookings</h2>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-}
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Service</th>
-            <th>Requested For</th>
-            <th>Status</th>
-            <th>Notes</th>
-            <th>Requested At</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (!Model.Any())
-        {
-            <tr><td colspan="6" class="text-muted">No bookings found.</td></tr>
-        }
-        else
-        {
-            foreach (var b in Model)
+    @if (!Model.Any())
+    {
+        <p class="text-muted">You have no bookings yet.</p>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var booking in Model)
             {
-                <tr>
-                    <td>@(b.Service?.Title ?? "—")</td>
-                    <td>@b.RequestedFor.ToLocalTime().ToString("g")</td>
-                    <td>@b.Status</td>
-                    <td>@(string.IsNullOrEmpty(b.Notes) ? "-" : b.Notes)</td>
-                    <td>@b.CreatedAt.ToLocalTime().ToString("g")</td>
-                    <td>
-                        @if (b.Status == ServiceLink.Models.BookingStatus.Pending)
-                        {
-                            <form asp-action="Cancel" method="post" class="d-inline">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@b.BookingId" />
-                                <button class="btn btn-sm btn-warning">Cancel</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <span class="text-muted">—</span>
-                        }
-                    </td>
-                </tr>
+                <div class="list-group-item mb-2">
+                    <h5 class="mb-1">@booking.Service.Title</h5>
+
+                    <p class="mb-1">
+                        <strong>Date:</strong>
+                        @booking.RequestedFor.ToShortDateString()
+                    </p>
+
+                    <p class="mb-1">
+                        <strong>Status:</strong>
+                        <span class="badge bg-warning text-dark">
+                            @booking.Status
+                        </span>
+                    </p>
+
+                    <small class="text-muted">
+                        Requested on @booking.CreatedAt.ToShortDateString()
+                    </small>
+                </div>
             }
-        }
-    </tbody>
-</table>
+        </div>
+    }
+</div>

@@ -20,6 +20,14 @@
                     aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="container mt-3">
+                    <div class="alert alert-success">
+                        @TempData["SuccessMessage"]
+                    </div>
+                </div>
+            }
 
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">

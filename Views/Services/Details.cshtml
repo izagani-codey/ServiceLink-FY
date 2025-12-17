@@ -1,23 +1,67 @@
 ﻿@model ServiceLink.Models.Service
+
 @{
     ViewData["Title"] = "Service Details";
 }
 
-<h2>@Model.Title</h2>
+<div class="container py-4">
 
-<div class="mb-3">
-    <p>@Model.Description</p>
-    <p><strong>Category:</strong> @(String.IsNullOrEmpty(Model.Category) ? "General" : Model.Category)</p>
-    <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
-    <p><strong>Created:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")</p>
+    <div class="mb-3">
+        <a asp-action="Index">← Back to Services</a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <h1 class="fw-bold">@Model.Title</h1>
+
+            @if (!string.IsNullOrEmpty(Model.Category))
+            {
+                <span class="badge bg-secondary mb-3">
+                    @Model.Category
+                </span>
+            }
+
+            <p class="text-muted mt-3">
+                @Model.Description
+            </p>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-3">Service Summary</h5>
+
+                    <div class="mb-2">
+                        <strong>Price:</strong><br />
+                        <span class="fs-4 fw-bold">
+                            RM @Model.Price.ToString("N2")
+                        </span>
+                    </div>
+
+                    <div class="text-muted small mb-3">
+                        Created on @Model.CreatedAt.ToString("dd MMM yyyy")
+                    </div>
+
+                    @if (User.Identity.IsAuthenticated)
+
+                    {
+                        <a asp-controller="Bookings"
+                           asp-action="Create"
+                           asp-route-serviceId="@Model.ServiceId"
+                           class="btn btn-primary w-100">
+                            Request Booking
+                        </a>
+                    }
+                    else if (!User.Identity.IsAuthenticated)
+                    {
+                        <a asp-area="Identity"
+                           asp-page="/Account/Login"
+                           class="btn btn-outline-primary w-100">
+                            Login to Book
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-@* Booking action (only visible to authenticated customers) *@
-@if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
-{
-    <a class="btn btn-success" href="@Url.Action("Create", "Bookings", new { serviceId = Model.ServiceId })">Request Booking</a>
-}
-else if (!User.Identity?.IsAuthenticated == true)
-{
-    <a class="btn btn-outline-primary" href="@Url.Action("Login", "Account", new { area = "Identity" })">Login to Request</a>
-}
