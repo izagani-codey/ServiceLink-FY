@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ServiceLink.Models.Booking>
+﻿@model IEnumerable<ServiceLink.ViewModels.BookingListItemViewModel>
+
 
 @{
     ViewData["Title"] = "My Bookings";
@@ -16,26 +17,15 @@
         <div class="list-group">
             @foreach (var booking in Model)
             {
-                <div class="list-group-item mb-2">
-                    <h5 class="mb-1">@booking.Service.Title</h5>
-
-                    <p class="mb-1">
-                        <strong>Date:</strong>
-                        @booking.RequestedFor.ToShortDateString()
-                    </p>
-
-                    <p class="mb-1">
-                        <strong>Status:</strong>
-                        <span class="badge bg-warning text-dark">
-                            @booking.Status
-                        </span>
-                    </p>
-
-                    <small class="text-muted">
-                        Requested on @booking.CreatedAt.ToShortDateString()
-                    </small>
-                </div>
+                <tr>
+                    <td>@booking.ServiceTitle</td>
+                    <td>@booking.RequestedFor.ToString("g")</td>
+                    <td>@booking.CreatedAt.ToString("g")</td>
+                    <td>@booking.Status</td>
+                    <td>@booking.Notes</td>
+                </tr>
             }
+
         </div>
     }
 </div>

@@ -24,34 +24,20 @@ else
         <thead>
             <tr>
                 <th>Service</th>
-                <th>Customer</th>
-                <th>Requested For</th>
-                <th>Notes</th>
-                <th></th>
+                <th>Requested Date</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var b in Model)
+            @foreach (var booking in Model)
             {
                 <tr>
-                    <td>@b.ServiceTitle</td>
-                    <td>@b.CustomerEmail</td>
-                    <td>@b.RequestedFor.ToLocalTime().ToString("g")</td>
-                    <td>@(string.IsNullOrEmpty(b.Notes) ? "-" : b.Notes)</td>
-                    <td>
-                        <form asp-action="Accept" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@b.BookingId" />
-                            <button class="btn btn-sm btn-success">Accept</button>
-                        </form>
-                        <form asp-action="Reject" method="post" class="d-inline ms-1">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@b.BookingId" />
-                            <button class="btn btn-sm btn-danger">Reject</button>
-                        </form>
-                    </td>
+                    <td>@booking.ServiceTitle</td>
+                    <td>@booking.RequestedFor.ToShortDateString()</td>
+                    <td>@booking.Status</td>
                 </tr>
             }
         </tbody>
     </table>
+
 }

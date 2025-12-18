@@ -42,16 +42,16 @@
                         Created on @Model.CreatedAt.ToString("dd MMM yyyy")
                     </div>
 
-                    @if (User.Identity.IsAuthenticated)
-
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("User"))
                     {
                         <a asp-controller="Bookings"
                            asp-action="Create"
                            asp-route-serviceId="@Model.ServiceId"
-                           class="btn btn-primary w-100">
+                           class="btn btn-success">
                             Request Booking
                         </a>
                     }
+
                     else if (!User.Identity.IsAuthenticated)
                     {
                         <a asp-area="Identity"

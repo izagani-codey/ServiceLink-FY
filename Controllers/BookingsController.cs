@@ -23,75 +23,76 @@ namespace ServiceLink.Controllers
         }
 
         // GET: /Bookings/Create?serviceId=5
-        [Authorize]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> Create(int serviceId)
         {
-            var service = await _db.Services.AsNoTracking().FirstOrDefaultAsync(s => s.ServiceId == serviceId);
+            var service = await _db.Services.FindAsync(serviceId);
             if (service == null) return NotFound();
 
             var vm = new BookingCreateViewModel
             {
-                ServiceId = serviceId,
+                ServiceId = service.ServiceId,
                 ServiceTitle = service.Title,
-                RequestedFor = DateTime.UtcNow.Date.AddDays(1) // default tomorrow
+                RequestedFor = DateTime.Today.AddDays(1)
             };
 
             return View(vm);
         }
 
+
         // POST: /Bookings/Create
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "User")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(BookingCreateViewModel vm)
         {
             if (!ModelState.IsValid) return View(vm);
 
-            if (vm.RequestedFor.Date < DateTime.UtcNow.Date)
-            {
-                ModelState.AddModelError(nameof(vm.RequestedFor), "Requested date cannot be in the past.");
-                return View(vm);
-            }
-
-            var service = await _db.Services.FirstOrDefaultAsync(s => s.ServiceId == vm.ServiceId);
+            var service = await _db.Services.FindAsync(vm.ServiceId);
             if (service == null) return NotFound();
 
-            var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (customerId == null) return Forbid();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var booking = new Booking
             {
                 ServiceId = vm.ServiceId,
-                CustomerId = customerId,
-                ProviderId = service.ProviderId ?? throw new InvalidOperationException("Service has no provider."),
+                CustomerId = userId,
+                ProviderId = service.ProviderId ?? User.FindFirstValue(ClaimTypes.NameIdentifier),
                 RequestedFor = vm.RequestedFor,
                 Notes = vm.Notes,
                 Status = BookingStatus.Pending,
                 CreatedAt = DateTime.UtcNow
             };
 
+
             _db.Bookings.Add(booking);
             await _db.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Booking requested. Provider will review your request.";
             return RedirectToAction(nameof(MyBookings));
         }
 
+
         // GET: /Bookings/MyBookings
-        [Authorize]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> MyBookings()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Forbid();
 
             var bookings = await _db.Bookings
-    .Include(b => b.Service)
-    .Where(b => b.CustomerId == userId)
-    .ToListAsync();
-
+                .Where(b => b.CustomerId == userId)
+                .Include(b => b.Service)
+                .Select(b => new BookingListItemViewModel
+                {
+                    BookingId = b.BookingId,
+                    ServiceTitle = b.Service.Title,
+                    RequestedFor = b.RequestedFor,
+                    Status = b.Status
+                })
+                .ToListAsync();
 
             return View(bookings);
         }
+
 
         // POST: /Bookings/Cancel/5
         [HttpPost]
@@ -120,41 +121,30 @@ namespace ServiceLink.Controllers
             return RedirectToAction(nameof(MyBookings));
         }
 
-        // GET: /Bookings/Incoming
-        [Authorize(Roles = "Provider,Admin,MasterDemo")]
+        [Authorize(Roles = "Provider,MasterDemo")]
         public async Task<IActionResult> Incoming()
         {
             var providerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (providerId == null) return Forbid();
 
             var bookings = await _db.Bookings
-                .AsNoTracking()
-                .Where(b => b.ProviderId == providerId && b.Status == BookingStatus.Pending)
                 .Include(b => b.Service)
-                .OrderBy(b => b.RequestedFor)
-                .ToListAsync();
-
-            // build viewmodels including customer info
-            var vmList = new List<BookingListItemViewModel>();
-            foreach (var b in bookings)
-            {
-                var user = await _userManager.FindByIdAsync(b.CustomerId);
-                vmList.Add(new BookingListItemViewModel
+                .Where(b => b.ProviderId == providerId)
+                .OrderByDescending(b => b.CreatedAt)
+                .Select(b => new BookingListItemViewModel
                 {
                     BookingId = b.BookingId,
-                    ServiceId = b.ServiceId,
-                    ServiceTitle = b.Service?.Title ?? string.Empty,
+                    ServiceTitle = b.Service.Title,
                     RequestedFor = b.RequestedFor,
-                    Status = b.Status,
-                    CustomerId = b.CustomerId,
-                    CustomerEmail = user?.Email ?? b.CustomerId,
                     CreatedAt = b.CreatedAt,
+                    Status = b.Status,
                     Notes = b.Notes
-                });
-            }
+                })
+                .ToListAsync();
 
-            return View(vmList);
+            return View(bookings);
         }
+
+
 
         // POST: /Bookings/Accept/5
         [HttpPost]
