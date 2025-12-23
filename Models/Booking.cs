@@ -18,8 +18,12 @@ namespace ServiceLink.Models
         public int BookingId { get; set; }
 
         public int ServiceId { get; set; }
-        public string? CustomerId { get; set; }
-        public string? ProviderId { get; set; }
+        [Required]
+        public string CustomerId { get; set; } = null!;
+
+        [Required]
+        public string ProviderId { get; set; } = null!;
+
         public Service? Service { get; set; }
 
         public DateTime RequestedFor { get; set; }

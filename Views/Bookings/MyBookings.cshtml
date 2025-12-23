@@ -4,28 +4,68 @@
 @{
     ViewData["Title"] = "My Bookings";
 }
-
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
 <div class="container py-4">
     <h2 class="fw-bold mb-4">My Bookings</h2>
+    <div class="alert alert-info">
+        Booking requests are reviewed by service providers.
+        Pending bookings are awaiting confirmation.
+    </div>
+
+
 
     @if (!Model.Any())
     {
         <p class="text-muted">You have no bookings yet.</p>
     }
-    else
-    {
-        <div class="list-group">
-            @foreach (var booking in Model)
-            {
-                <tr>
-                    <td>@booking.ServiceTitle</td>
-                    <td>@booking.RequestedFor.ToString("g")</td>
-                    <td>@booking.CreatedAt.ToString("g")</td>
-                    <td>@booking.Status</td>
-                    <td>@booking.Notes</td>
-                </tr>
-            }
-
-        </div>
-    }
+    else{
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Service</th>
+            <th>Requested For</th>
+            <th>Requested On</th>
+            <th>Status</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model)
+        {
+            <tr>
+                <td>@booking.ServiceTitle</td>
+                <td>@booking.RequestedFor.ToString("g")</td>
+                <td>@booking.CreatedAt.ToString("g")</td>
+                <td>
+                    @if (booking.Status == BookingStatus.Pending)
+                    {
+                        <span class="badge bg-warning text-dark">
+                            Pending (Awaiting provider)
+                        </span>
+                    }
+                    else if (booking.Status == BookingStatus.Accepted)
+                    {
+                        <span class="badge bg-success">Accepted</span>
+                    }
+                    else if (booking.Status == BookingStatus.Rejected)
+                    {
+                        <span class="badge bg-danger">Rejected</span>
+                    }
+                    else if (booking.Status == BookingStatus.Cancelled)
+                    {
+                        <span class="badge bg-secondary">Cancelled</span>
+                    }
+                </td>
+                <td>@booking.Notes</td>
+            </tr>
+        }
+        
+    </tbody>
+</table>
+}
 </div>

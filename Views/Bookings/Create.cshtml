@@ -15,23 +15,26 @@
         </p>
     </div>
 
-    <form asp-action="Create" method="post">
+    <form asp-controller="Bookings" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
         <input type="hidden" asp-for="ServiceId" />
 
-        <div class="mb-3">
-            <label asp-for="RequestedFor" class="form-label"></label>
-            <input asp-for="RequestedFor" type="date" class="form-control" />
-            <span asp-validation-for="RequestedFor" class="text-danger"></span>
+        <div class="form-group">
+            <label asp-for="RequestedFor"></label>
+            <input asp-for="RequestedFor" type="datetime-local" class="form-control" />
+
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Notes"></label>
+            <textarea asp-for="Notes" class="form-control"></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">
-            Submit Booking Request
+            Book Service
         </button>
-
-        <a asp-action="Index"
-           asp-controller="Services"
-           class="btn btn-link">
-            Cancel
-        </a>
     </form>
+
+
 </div>

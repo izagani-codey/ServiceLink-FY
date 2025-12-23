@@ -1,9 +1,10 @@
 ﻿@model IEnumerable<ServiceLink.ViewModels.BookingListItemViewModel>
+
 @{
     ViewData["Title"] = "Incoming Bookings";
 }
 
-<h2>Incoming Bookings</h2>
+<h2 class="fw-bold mb-4">Incoming Bookings</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -16,16 +17,17 @@
 
 @if (!Model.Any())
 {
-    <p class="text-muted">No pending bookings.</p>
+    <p class="text-muted">No incoming booking requests.</p>
 }
 else
 {
-    <table class="table">
+    <table class="table table-striped align-middle">
         <thead>
             <tr>
                 <th>Service</th>
-                <th>Requested Date</th>
+                <th>Requested For</th>
                 <th>Status</th>
+                <th style="width:200px;">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -33,11 +35,51 @@ else
             {
                 <tr>
                     <td>@booking.ServiceTitle</td>
-                    <td>@booking.RequestedFor.ToShortDateString()</td>
-                    <td>@booking.Status</td>
+                    <td>@booking.RequestedFor.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @if (booking.Status == BookingStatus.Pending)
+                        {
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        }
+                        else if (booking.Status == BookingStatus.Accepted)
+                        {
+                            <span class="badge bg-success">Accepted</span>
+                        }
+                        else if (booking.Status == BookingStatus.Rejected)
+                        {
+                            <span class="badge bg-danger">Rejected</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@booking.Status</span>
+                        }
+                    </td>
+                    <td>
+                        @if (booking.Status == BookingStatus.Pending)
+                        {
+                            <form asp-action="Accept" asp-route-id="@booking.BookingId"
+                                  method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    Accept
+                                </button>
+                            </form>
+
+                            <form asp-action="Reject" asp-route-id="@booking.BookingId"
+                                  method="post" class="d-inline ms-1">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    Reject
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No actions</span>
+                        }
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
-
 }

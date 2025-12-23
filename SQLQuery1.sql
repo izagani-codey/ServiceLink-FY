@@ -1,4 +1,4 @@
-﻿SELECT COLUMN_NAME, IS_NULLABLE 
-FROM INFORMATION_SCHEMA.COLUMNS 
-WHERE TABLE_NAME = 'AspNetUsers' AND COLUMN_NAME = 'FullName';
-
+﻿SELECT u.email, r.Name
+FROM AspNetUsers u
+JOIN AspNetUserRoles ur  ON u.Id = ur.UserId
+JOIN AspNetRoles r ON r.Id = Ur.RoleId
