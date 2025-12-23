@@ -1,219 +1,164 @@
-# ServiceLink — Service Marketplace Platform  
-Final Year Project (FYP) — 2025  
-Built with **ASP.NET Core MVC**, **Entity Framework Core**, **SQL Server**, and **Identity**
+ServiceLink
 
----
+ServiceLink is a role-based service booking web application developed using ASP.NET Core MVC, Entity Framework Core, SQL Server, and ASP.NET Identity.
+The system connects customers with service providers, allowing users to request services and providers to manage incoming bookings.
 
-## 📌 Overview
+This project is developed as a Final Year Project (FYP) and is also intended to evolve into a production-ready platform beyond academic requirements.
 
-**ServiceLink** is a web-based platform designed to connect customers with service providers (e.g., electricians, mechanics, cleaners, tutors).  
-The system supports multiple roles, secure authentication, service listing management, and a full booking workflow.
+🚀 Project Vision
 
-This project demonstrates a real-world service marketplace with:
+ServiceLink aims to simplify service discovery and booking by providing:
 
-- User registration & login  
-- Role-based access (User, Provider, Admin, MasterDemo)  
-- Service listing creation & management  
-- Customer booking workflow  
-- Provider booking approval dashboard  
-- Clean UI with responsive Bootstrap layout  
+A clear user → provider booking workflow
 
-The goal is to deliver a functional, scalable, and user-friendly service platform suitable for business adoption.
+Role-based access control
 
----
+Scalable backend architecture
 
-## 🚀 Tech Stack
+A foundation for future enhancements such as approval workflows, notifications, and POS integration
 
-### **Backend**
-- ASP.NET Core MVC (LTS)
-- Entity Framework Core (Code First)
-- ASP.NET Core Identity (Custom ApplicationUser)
-- C#
+The current focus is on core functionality and workflow stability, followed by UI/UX refinement.
 
-### **Frontend**
-- Bootstrap 5  
-- Razor Views  
-- jQuery (minimal usage)
+🧱 Technology Stack
 
-### **Database**
-- SQL Server (LocalDB)
+Backend: ASP.NET Core MVC (.NET 8)
 
----
+Authentication: ASP.NET Core Identity
 
-## 🔐 Authentication & Roles
+Database: SQL Server + Entity Framework Core
 
-Implemented using **ASP.NET Identity** with a customized ApplicationUser model.
+Frontend: Razor Views + Bootstrap (UI redesign in progress via Figma)
 
-Current roles supported:
+Architecture: MVC + ViewModels (separation of concerns)
 
-- **User** — can browse & book services  
-- **Provider** — can create/manage services & incoming bookings  
-- **Admin** — system-level actions (TBD)  
-- **MasterDemo** — full-access demo role for showcasing features  
+👥 User Roles
 
-Role seeding is included during application startup.
+The system currently supports multiple roles:
 
----
+User (Customer):
+Browse services, submit booking requests, view own bookings
 
-## 🧩 Features Implemented (✔ Completed)
+Provider (Service Owner):
+Create services, view incoming booking requests
 
-### ✅ **1. User Authentication**
-- Registration  
-- Login  
-- Logout  
-- Identity scaffolding integrated  
-- Custom ApplicationUser model (FullName, Provider link)  
-- Role seeding
+Admin:
+Reserved for system management (planned)
 
----
+MasterDemo:
+Demo/testing role with extended visibility for presentation purposes
 
-### ✅ **2. Role-Based Navigation**
-Navbar dynamically adapts based on:
-- Role  
-- Authentication status  
-- Current route (active highlighting)
+🔄 Core Workflow (Current State)
+User Flow
 
-Sticky navbar and layout polish completed.
+Register and log in
 
----
+Browse available services
 
-### ✅ **3. Service Management (Provider)**
-- Create Service  
-- View all services (public)  
-- View provider's own services (`MyServices`)  
+View service details
 
-Model supports:
-- Title  
-- Description  
-- Category  
-- Price  
-- ProviderId (FK to ApplicationUser)
+Submit a booking request
 
----
+View booking history
 
-### ✅ **4. Booking Workflow**
-**Customer side:**
-- Book a service  
-- View bookings (`MyBookings`)  
-- Cancel pending bookings
+Provider Flow
 
-**Provider side:**
-- View incoming bookings  
-- Accept/Reject booking requests  
+Log in as provider
 
----
+Create and manage services
 
-### ✅ **5. Layout & UI Enhancements**
-- Updated `_Layout.cshtml`  
-- RenderBody + RenderSection fixed  
-- Mobile-friendly role-aware navigation  
-- Flash messages support  
-- Basic hero/landing structure ready  
+View incoming booking requests linked to their services
 
----
+⚠️ Booking approval/rejection and notifications are planned for the next development phase.
 
-## 🛠 Features in Progress (🔄 Ongoing)
+✅ Implemented Features
 
-### 🔄 **1. Service Edit/Delete**
-To complete provider-side CRUD.
+User authentication and authorization (Identity)
 
-### 🔄 **2. Admin Panel**
-Minimal dashboard for:
-- User management  
-- Service moderation  
-- Booking oversight  
+Role-based access control
 
-### 🔄 **3. Improved Home Page**
-Need a hero section and platform introduction for SV demo.
+Service creation and listing
 
----
+Booking request creation
 
-## 📅 Planned Features (📝 Upcoming)
+Provider-linked booking routing
 
-### 📝 **1. Provider Dashboard**
-Analytics + quick overview:
-- Service count  
-- Pending bookings  
-- Today’s tasks  
+Booking visibility for users and providers
 
-### 📝 **2. POS CSV Import (Optional High-Impact Feature)**
-Allow providers to upload a CSV file representing inventory/POS data.  
-Useful for business integration.
+Database migrations and schema setup
 
-### 📝 **3. Search & Filtering**
-Search services by:
-- Category  
-- Price  
-- Keywords  
+ViewModels for safe UI data exposure
 
-### 📝 **4. MasterDemo Account Menu**
-Toggle between roles for demonstration purposes.
+🛠️ Work in Progress / Planned Features
 
----
+Booking approval & status updates (Accept / Reject / Complete)
 
-## 📁 Project Structure (Current)
+Email or in-app notifications
 
-ServiceLink/
-│
-├── Areas/
-│ └── Identity/Pages/Account/... # Identity UI
-│
-├── Controllers/
-│ ├── HomeController.cs
-│ ├── ServicesController.cs
-│ └── BookingsController.cs
-│
-├── Data/
-│ ├── ApplicationDbContext.cs
-│ └── DesignTimeDbContextFactory.cs
-│
-├── Models/
-│ ├── ApplicationUser.cs
-│ ├── Service.cs
-│ └── Booking.cs
-│
-├── Views/
-│ ├── Home/
-│ ├── Services/
-│ ├── Bookings/
-│ └── Shared/
-│ ├── _Layout.cshtml
-│ └── _FlashMessages.cshtml
-│
-└── Migrations/
+Improved provider dashboard
 
+UI redesign and polish (Figma-based design in progress)
 
+Validation and error handling improvements
 
----
+Admin moderation tools
 
-## 🔧 How to Run the Project
+Optional POS / inventory integration (future scope)
 
-1. Clone repository  
-2. Open solution in **Visual Studio 2022**  
-3. Ensure packages restore  
-4. Update database:
-```bash
-dotnet ef database update
-Run the project (IIS Express or Kestrel)
+🎨 UI / UX Status
 
-Master Demo account (auto seeded):
+The current UI prioritizes functionality and clarity.
+A redesigned UI is being prototyped in Figma to improve:
 
-makefile
-Copy code
-Email: master@servicelink.test
-Password: MasterPass123!
-📌 Progress Status (Today)
-Category	Status
-Authentication	✔ Done
-Role System	✔ Done
-Service Creation	✔ Done
-Service Listing	✔ Done
-Booking Workflow	✔ 80%
-Provider Dashboard	❌ Not Started
-Admin Panel	❌ Not Started
-POS Integration	❌ Optional
-UI Polish	🔄 Ongoing
+Navigation flow
 
-🏁 Conclusion
-ServiceLink is now functionally stable with user roles, services, and full booking workflow.
-Upcoming work focuses on admin functionality, UI polish, and optional advanced features like POS integration.
+Visual hierarchy
+
+User experience for booking and management
+
+UI integration will follow once backend workflows are fully stabilized.
+
+📌 Project Status
+
+Development Stage: Core functionality implemented, workflow stabilization ongoing
+
+Focus Area: Booking workflow reliability and role-based visibility
+
+Next Milestone: Provider actions + UI integration
+
+This project reflects iterative development, with features being built, tested, and refined incrementally.
+
+📂 Project Structure Overview
+Controllers/
+  ├── ServicesController
+  ├── BookingsController
+  └── HomeController
+
+Models/
+  ├── ApplicationUser
+  ├── Service
+  └── Booking
+
+ViewModels/
+  ├── ServiceCreateViewModel
+  ├── BookingCreateViewModel
+  └── BookingListItemViewModel
+
+Views/
+  ├── Services/
+  ├── Bookings/
+  ├── Home/
+  └── Shared/
+
+Data/
+  └── ApplicationDbContext
+
+🧠 Notes
+
+This repository reflects active development.
+Some features may be partially implemented or under refinement as the project progresses.
+
+👤 Author
+
+Ahmed Amru Athif
+Final Year Diploma Project
+ASP.NET MVC | Software Engineering | Full-stack Development
