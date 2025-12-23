@@ -4,64 +4,73 @@
     ViewData["Title"] = "Service Details";
 }
 
-<div class="container py-4">
+<div class="container py-5">
 
-    <div class="mb-3">
-        <a asp-action="Index">← Back to Services</a>
+    <!-- PAGE HEADER -->
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">@Model.Title</h2>
+        <p class="text-muted mb-0">
+            Review service details before requesting a booking
+        </p>
     </div>
 
-    <div class="row">
+    <div class="row g-4">
+
+        <!-- LEFT: SERVICE INFO -->
         <div class="col-lg-8">
-            <h1 class="fw-bold">@Model.Title</h1>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
 
-            @if (!string.IsNullOrEmpty(Model.Category))
-            {
-                <span class="badge bg-secondary mb-3">
-                    @Model.Category
-                </span>
-            }
-
-            <p class="text-muted mt-3">
-                @Model.Description
-            </p>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="fw-semibold mb-3">Service Summary</h5>
-
-                    <div class="mb-2">
-                        <strong>Price:</strong><br />
-                        <span class="fs-4 fw-bold">
-                            RM @Model.Price.ToString("N2")
+                    <!-- CATEGORY -->
+                    @if (!string.IsNullOrEmpty(Model.Category))
+                    {
+                        <span class="badge bg-secondary-subtle text-dark mb-3">
+                            @Model.Category
                         </span>
-                    </div>
-
-                    <div class="text-muted small mb-3">
-                        Created on @Model.CreatedAt.ToString("dd MMM yyyy")
-                    </div>
-
-                    @if (User.Identity.IsAuthenticated && User.IsInRole("User"))
-                    {
-                        <a asp-controller="Bookings"
-                           asp-action="Create"
-                           asp-route-serviceId="@Model.ServiceId"
-                           class="btn btn-success">
-                            Request Booking
-                        </a>
                     }
 
-                    else if (!User.Identity.IsAuthenticated)
-                    {
-                        <a asp-area="Identity"
-                           asp-page="/Account/Login"
-                           class="btn btn-outline-primary w-100">
-                            Login to Book
-                        </a>
-                    }
+                    <!-- DESCRIPTION -->
+                    <h5 class="fw-semibold mb-2">Service Description</h5>
+                    <p class="text-muted mb-0">
+                        @Model.Description
+                    </p>
+
                 </div>
             </div>
         </div>
+
+        <!-- RIGHT: BOOKING PANEL -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+
+                    <h5 class="fw-semibold mb-3">Booking Summary</h5>
+
+                    <!-- PRICE -->
+                    <div class="mb-3">
+                        <span class="text-muted small">Price</span>
+                        <div class="fs-4 fw-bold">
+                            RM @Model.Price.ToString("N2")
+                        </div>
+                    </div>
+
+                    <!-- INFO -->
+                    <div class="text-muted small mb-4">
+                        Once you submit a booking request, the service provider will review and respond.
+                    </div>
+
+                    <!-- CTA -->
+                    <a asp-controller="Bookings"
+                       asp-action="Create"
+                       asp-route-serviceId="@Model.ServiceId"
+                       class="btn btn-primary w-100">
+                        Request Booking
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
     </div>
+
 </div>

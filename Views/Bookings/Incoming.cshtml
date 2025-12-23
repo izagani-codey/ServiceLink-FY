@@ -4,24 +4,36 @@
     ViewData["Title"] = "Incoming Bookings";
 }
 
-<h2 class="fw-bold mb-4">Incoming Bookings</h2>
+<div class="container py-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-}
 
-@if (!Model.Any())
-{
-    <p class="text-muted">No incoming booking requests.</p>
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5 text-muted">
+                    <h5 class="fw-semibold">No incoming bookings</h5>
+                    <p class="small mb-0">
+                        New booking requests from customers will appear here.
+                    </p>
+                </div>
+            
+
+
 }
 else
 {
-    <table class="table table-striped align-middle">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1">Incoming Bookings</h2>
+                        <p class="text-muted mb-0">
+                            Review and manage booking requests from customers
+                        </p>
+                    </div>
+                </div>
+
+                <table class="table table-hover align-middle">
+
         <thead>
             <tr>
                 <th>Service</th>
@@ -37,49 +49,57 @@ else
                     <td>@booking.ServiceTitle</td>
                     <td>@booking.RequestedFor.ToString("dd/MM/yyyy")</td>
                     <td>
-                        @if (booking.Status == BookingStatus.Pending)
-                        {
-                            <span class="badge bg-warning text-dark">Pending</span>
-                        }
-                        else if (booking.Status == BookingStatus.Accepted)
-                        {
-                            <span class="badge bg-success">Accepted</span>
-                        }
-                        else if (booking.Status == BookingStatus.Rejected)
-                        {
-                            <span class="badge bg-danger">Rejected</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">@booking.Status</span>
-                        }
+                                    @if (booking.Status == BookingStatus.Pending)
+                                    {
+                                        <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
+                                            Pending · Awaiting Action
+                                        </span>
+                                    }
+                                    else if (booking.Status == BookingStatus.Accepted)
+                                    {
+                                        <span class="badge rounded-pill bg-success px-3 py-2">
+                                            Accepted
+                                        </span>
+                                    }
+                                    else if (booking.Status == BookingStatus.Rejected)
+                                    {
+                                        <span class="badge rounded-pill bg-danger px-3 py-2">
+                                            Rejected
+                                        </span>
+                                    }
+
                     </td>
                     <td>
-                        @if (booking.Status == BookingStatus.Pending)
-                        {
-                            <form asp-action="Accept" asp-route-id="@booking.BookingId"
-                                  method="post" class="d-inline">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-sm btn-success">
-                                    Accept
-                                </button>
-                            </form>
+                                    @if (booking.Status == BookingStatus.Pending)
+                                    {
+                                        <div class="d-flex gap-2">
+                                            <form asp-action="Accept" asp-route-id="@booking.BookingId" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-success px-3">
+                                                    Accept
+                                                </button>
+                                            </form>
 
-                            <form asp-action="Reject" asp-route-id="@booking.BookingId"
-                                  method="post" class="d-inline ms-1">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    Reject
-                                </button>
-                            </form>
-                        }
-                        else
-                        {
-                            <span class="text-muted">No actions</span>
-                        }
+                                            <form asp-action="Reject" asp-route-id="@booking.BookingId" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-danger px-3">
+                                                    Reject
+                                                </button>
+                                            </form>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Decision completed</span>
+                                    }
+
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 }
+        </div>
+    </div>
+</div>
+

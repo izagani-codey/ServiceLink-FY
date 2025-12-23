@@ -1,71 +1,91 @@
 ﻿@model IEnumerable<ServiceLink.ViewModels.BookingListItemViewModel>
 
-
 @{
     ViewData["Title"] = "My Bookings";
 }
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
-<div class="container py-4">
-    <h2 class="fw-bold mb-4">My Bookings</h2>
-    <div class="alert alert-info">
-        Booking requests are reviewed by service providers.
-        Pending bookings are awaiting confirmation.
+
+<div class="container py-5">
+
+    <!-- PAGE HEADER -->
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">My Bookings</h2>
+        <p class="text-muted mb-0">
+            Manage and track all your service booking requests
+        </p>
     </div>
 
-
-
+    <!-- EMPTY STATE -->
     @if (!Model.Any())
     {
-        <p class="text-muted">You have no bookings yet.</p>
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5 text-muted">
+                <h5 class="fw-semibold">No bookings yet</h5>
+                <p class="small mb-0">
+                    Once you request a service, it will appear here.
+                </p>
+            </div>
+        </div>
     }
-    else{
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Service</th>
-            <th>Requested For</th>
-            <th>Requested On</th>
-            <th>Status</th>
-            <th>Notes</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var booking in Model)
-        {
-            <tr>
-                <td>@booking.ServiceTitle</td>
-                <td>@booking.RequestedFor.ToString("g")</td>
-                <td>@booking.CreatedAt.ToString("g")</td>
-                <td>
-                    @if (booking.Status == BookingStatus.Pending)
-                    {
-                        <span class="badge bg-warning text-dark">
-                            Pending (Awaiting provider)
-                        </span>
-                    }
-                    else if (booking.Status == BookingStatus.Accepted)
-                    {
-                        <span class="badge bg-success">Accepted</span>
-                    }
-                    else if (booking.Status == BookingStatus.Rejected)
-                    {
-                        <span class="badge bg-danger">Rejected</span>
-                    }
-                    else if (booking.Status == BookingStatus.Cancelled)
-                    {
-                        <span class="badge bg-secondary">Cancelled</span>
-                    }
-                </td>
-                <td>@booking.Notes</td>
-            </tr>
-        }
-        
-    </tbody>
-</table>
-}
+    else
+    {
+        <!-- BOOKINGS LIST -->
+        <div class="d-flex flex-column gap-3">
+
+            @foreach (var booking in Model)
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+
+                            <!-- LEFT: BOOKING INFO -->
+                            <div>
+                                <h5 class="fw-semibold mb-1">
+                                    @booking.ServiceTitle
+                                </h5>
+
+                                <div class="text-muted small">
+                                    <span class="me-3">
+                                        📅 Requested for:
+                                        <strong>@booking.RequestedFor.ToString("dd MMM yyyy")</strong>
+                                    </span>
+
+                                    <span>
+                                        🕒 Requested on:
+                                        @booking.CreatedAt.ToString("dd MMM yyyy, h:mm tt")
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT: STATUS -->
+                            <div class="text-end">
+                                @if (booking.Status == BookingStatus.Pending)
+                                {
+                                    <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
+                                        Pending · Awaiting Provider
+                                    </span>
+                                }
+                                else if (booking.Status == BookingStatus.Accepted)
+                                {
+                                    <span class="badge rounded-pill bg-success px-3 py-2">
+                                        Accepted
+                                    </span>
+                                }
+                                else if (booking.Status == BookingStatus.Rejected)
+                                {
+                                    <span class="badge rounded-pill bg-danger px-3 py-2">
+                                        Rejected
+                                    </span>
+                                }
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    }
+
 </div>

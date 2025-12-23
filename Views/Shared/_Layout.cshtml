@@ -9,118 +9,148 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ServiceLink</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
         <div class="container">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Index">ServiceLink</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-                    aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
+                ServiceLink
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="container mt-3">
-                    <div class="alert alert-success">
-                        @TempData["SuccessMessage"]
-                    </div>
-                </div>
-            }
 
             <div class="collapse navbar-collapse" id="mainNav">
+
+                <!-- LEFT NAV -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
-                           asp-controller="Home" asp-action="Index">Home</a>
+                           asp-controller="Home" asp-action="Index">
+                            Home
+                        </a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Services" ? "active" : "")"
-                           asp-controller="Services" asp-action="Index">Services</a>
+                           asp-controller="Services" asp-action="Index">
+                            Services
+                        </a>
                     </li>
 
                     @if (User.Identity?.IsAuthenticated ?? false)
                     {
-                        if (User.IsInRole("Provider") || User.IsInRole("Admin") || User.IsInRole("MasterDemo"))
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "MyBookings" ? "active" : "")"
+                               asp-controller="Bookings" asp-action="MyBookings">
+                                My Bookings
+                            </a>
+                        </li>
+
+                        @if (User.IsInRole("Provider") || User.IsInRole("Admin") || User.IsInRole("MasterDemo"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "MyServices" ? "active" : "")"
-                                   asp-controller="Services" asp-action="MyServices">My Services</a>
+                                   asp-controller="Services" asp-action="MyServices">
+                                    Provider
+                                </a>
                             </li>
+
                             <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Bookings" ? "active" : "")"
-                                   asp-controller="Bookings" asp-action="Incoming">Incoming</a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Incoming" ? "active" : "")"
+                                   asp-controller="Bookings" asp-action="Incoming">
+                                    Incoming
+                                </a>
                             </li>
                         }
-                        <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "MyBookings" ? "active" : "")"
-                               asp-controller="Bookings" asp-action="MyBookings">My Bookings</a>
-                        </li>
                     }
                 </ul>
 
+                <!-- RIGHT NAV -->
                 <ul class="navbar-nav ms-auto">
                     @if (!User.Identity?.IsAuthenticated ?? false)
                     {
-                        <li class="nav-item"><a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
+                                Sign In
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary ms-2" asp-area="Identity" asp-page="/Account/Register">
+                                Get Started
+                            </a>
+                        </li>
                     }
                     else
                     {
-                        var userName = User.Identity.Name;
-                        var fullName = User.Claims.FirstOrDefault(c => c.Type == "FullName")?.Value;
-                        var display = !string.IsNullOrEmpty(fullName) ? fullName : userName;
+                        var displayName = User.Identity?.Name ?? "Account";
 
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                @display
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                @displayName
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                                <li><a class="dropdown-item" asp-controller="Bookings" asp-action="MyBookings">My Bookings</a></li>
+
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Bookings" asp-action="MyBookings">
+                                        My Bookings
+                                    </a>
+                                </li>
+
                                 @if (User.IsInRole("Provider") || User.IsInRole("Admin") || User.IsInRole("MasterDemo"))
                                 {
-                                    <li><a class="dropdown-item" asp-controller="Services" asp-action="Create">Create Service</a></li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Services" asp-action="Create">
+                                            Create Service
+                                        </a>
+                                    </li>
                                 }
+
                                 <li><hr class="dropdown-divider" /></li>
+
                                 <li>
                                     <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="px-3">
-                                        <button type="submit" class="btn btn-link text-decoration-none">Logout</button>
+                                        <button type="submit" class="btn btn-link p-0 text-decoration-none">
+                                            Logout
+                                        </button>
                                     </form>
                                 </li>
                             </ul>
                         </li>
                     }
                 </ul>
+
             </div>
         </div>
     </nav>
 
-    <div class="container mt-3">
-        <partial name="_FlashMessages" />
-        <!-- THIS is critical: the child view content is rendered here -->
-        @RenderBody()
-    </div>
+    <!-- ============== FLASH MESSAGES ============== -->
+    <partial name="_FlashMessages" />
 
-    <footer class="border-top footer text-muted mt-5">
-        <div class="container">
-            &copy; @DateTime.Now.Year - ServiceLink - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <!-- ================= MAIN ================= -->
+    <main class="bg-light flex-grow-1">
+        @RenderBody()
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="border-top text-muted py-3 bg-white mt-auto">
+        <div class="container text-center small">
+            &copy; @DateTime.Now.Year - ServiceLink ·
+            <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 
+    <!-- ================= SCRIPTS ================= -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     @RenderSection("Scripts", required: false)
-
-    <script>
-        // small nav scroll shadow (optional)
-        document.addEventListener('DOMContentLoaded', function () {
-            window.addEventListener('scroll', function () {
-                if (window.scrollY > 20) document.body.classList.add('scrolled'); else document.body.classList.remove('scrolled');
-            });
-        });
-    </script>
 </body>
 </html>
-
