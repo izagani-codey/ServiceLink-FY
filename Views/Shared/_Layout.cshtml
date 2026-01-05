@@ -7,17 +7,15 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - ServiceLink</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 
-<body class="d-flex flex-column min-vh-100">
-
-    <!-- ================= NAVBAR ================= -->
-    <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top">
         <div class="container">
             <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
                 ServiceLink
@@ -28,28 +26,20 @@
             </button>
 
             <div class="collapse navbar-collapse" id="mainNav">
-
-                <!-- LEFT NAV -->
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- LEFT -->
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
-                           asp-controller="Home" asp-action="Index">
-                            Home
-                        </a>
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Services" ? "active" : "")"
-                           asp-controller="Services" asp-action="Index">
-                            Services
-                        </a>
+                        <a class="nav-link" asp-controller="Services" asp-action="Index">Services</a>
                     </li>
 
                     @if (User.Identity?.IsAuthenticated ?? false)
                     {
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "MyBookings" ? "active" : "")"
-                               asp-controller="Bookings" asp-action="MyBookings">
+                            <a class="nav-link" asp-controller="Bookings" asp-action="MyBookings">
                                 My Bookings
                             </a>
                         </li>
@@ -57,67 +47,66 @@
                         @if (User.IsInRole("Provider") || User.IsInRole("Admin") || User.IsInRole("MasterDemo"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "MyServices" ? "active" : "")"
-                                   asp-controller="Services" asp-action="MyServices">
-                                    Provider
+                                <a class="nav-link" asp-controller="Bookings" asp-action="Incoming">
+                                    Incoming
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Incoming" ? "active" : "")"
-                                   asp-controller="Bookings" asp-action="Incoming">
-                                    Incoming
+                                <a class="nav-link" asp-controller="Services" asp-action="MyServices">
+                                    My Services
                                 </a>
                             </li>
                         }
                     }
                 </ul>
 
-                <!-- RIGHT NAV -->
+                <!-- RIGHT -->
                 <ul class="navbar-nav ms-auto">
                     @if (!User.Identity?.IsAuthenticated ?? false)
                     {
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
-                                Sign In
+                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="btn btn-outline-primary ms-2"
+                               asp-area="Identity"
+                               asp-page="/Account/Register">
+                                Register
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="btn btn-primary ms-2" asp-area="Identity" asp-page="/Account/Register">
-                                Get Started
+                            <a class="btn btn-primary ms-2"
+                               asp-area="Identity"
+                               asp-page="/Account/RegisterProvider">
+                                Become a Provider
                             </a>
                         </li>
                     }
                     else
                     {
-                        var displayName = User.Identity?.Name ?? "Account";
-
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                @displayName
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                @User.Identity.Name
                             </a>
-
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
-                                    <a class="dropdown-item" asp-controller="Bookings" asp-action="MyBookings">
+                                    <a class="dropdown-item"
+                                       asp-controller="Bookings"
+                                       asp-action="MyBookings">
                                         My Bookings
                                     </a>
                                 </li>
 
-                                @if (User.IsInRole("Provider") || User.IsInRole("Admin") || User.IsInRole("MasterDemo"))
-                                {
-                                    <li>
-                                        <a class="dropdown-item" asp-controller="Services" asp-action="Create">
-                                            Create Service
-                                        </a>
-                                    </li>
-                                }
-
                                 <li><hr class="dropdown-divider" /></li>
 
                                 <li>
-                                    <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="px-3">
-                                        <button type="submit" class="btn btn-link p-0 text-decoration-none">
+                                    <form asp-area="Identity"
+                                          asp-page="/Account/Logout"
+                                          method="post" class="px-3">
+                                        <button type="submit" class="btn btn-link p-0">
                                             Logout
                                         </button>
                                     </form>
@@ -126,31 +115,21 @@
                         </li>
                     }
                 </ul>
-
             </div>
         </div>
     </nav>
 
-    <!-- ============== FLASH MESSAGES ============== -->
-    <partial name="_FlashMessages" />
-
-    <!-- ================= MAIN ================= -->
-    <main class="bg-light flex-grow-1">
+    <main class="container py-4">
         @RenderBody()
     </main>
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="border-top text-muted py-3 bg-white mt-auto">
-        <div class="container text-center small">
-            &copy; @DateTime.Now.Year - ServiceLink ·
-            <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="border-top text-muted py-3">
+        <div class="container text-center">
+            &copy; @DateTime.Now.Year - ServiceLink
         </div>
     </footer>
 
-    <!-- ================= SCRIPTS ================= -->
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
     @RenderSection("Scripts", required: false)
 </body>
 </html>
